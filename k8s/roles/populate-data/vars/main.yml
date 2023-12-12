@@ -1,0 +1,20 @@
+---
+# vars file for k8s/roles/gke
+zone: asia-south1-a
+region: asia-south1
+location: asia
+project_id: hazelcast-33
+gcloud_sa_path: "gcp/credentials.json"
+credentials_file: "{{ lookup('env','HOME') }}/{{ gcloud_sa_path }}"
+repository_id: "rajbarua-docker"
+self_signed_cert_key_file: "~/hazelcast/hazelcast.key"
+self_signed_cert_cert_file: "~/hazelcast/hazelcast.pem"
+self_signed_cert_keystore_file: "~/hazelcast/hazelcast-keystore.jks"
+
+# use the section below to enter k8s cluster related information
+cluster_name: raj-test
+initial_node_count: 2
+disk_size_gb: 100
+disk_type: pd-ssd
+machine_type: e2-standard-2
+

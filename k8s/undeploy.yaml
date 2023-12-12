@@ -1,0 +1,230 @@
+- name: Deploy Hazelcast cluster and application
+  hosts: localhost
+  tasks:
+######################
+## Maps
+######################
+    - name: drop map transaction
+      kubernetes.core.k8s:
+        state: absent
+        api_version: hazelcast.com/v1alpha1
+        kind: Map
+        namespace: default
+        name: transaction
+      tags:
+        - maps
+        - hz
+    - name: drop map account
+      kubernetes.core.k8s:
+        state: absent
+        api_version: hazelcast.com/v1alpha1
+        kind: Map
+        namespace: default
+        name: account
+      tags:
+        - maps
+        - hz
+    - name: drop map merchant
+      kubernetes.core.k8s:
+        state: absent
+        api_version: hazelcast.com/v1alpha1
+        kind: Map
+        namespace: default
+        name: merchant
+      tags:
+        - maps
+        - hz
+    - name: Delete properties for mapstore merchant
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: mapstore-properties-merchant
+            namespace: default
+      tags:
+        - maps
+        - hz
+    - name: Delete properties for mapstore transaction
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: mapstore-properties-transaction
+            namespace: default
+      tags:
+        - maps
+        - hz
+    - name: Delete properties for mapstore account
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: mapstore-properties-account
+            namespace: default
+      tags:
+        - maps
+        - hz
+######################
+## MC
+######################
+
+    - name: Stop management center
+      kubernetes.core.k8s:
+        state: absent
+        api_version: hazelcast.com/v1alpha1
+        kind: ManagementCenter
+        namespace: default
+        name: hazelcast-mc
+      tags:
+        - mc
+######################
+## Hazelcast Platform
+######################
+
+    - name: UnInstall Hazelcast primary cluster
+      kubernetes.core.k8s:
+        state: absent
+        api_version: hazelcast.com/v1alpha1
+        kind: Hazelcast
+        namespace: default
+        name: hz-primary
+      tags:
+        - hz
+        - hz-platform
+        - hz-primary
+
+    - name: UnInstall Hazelcast secondary cluster
+      kubernetes.core.k8s:
+        state: absent
+        api_version: hazelcast.com/v1alpha1
+        kind: Hazelcast
+        namespace: default
+        name: hz-secondary
+      tags:
+        - hz
+        - hz-platform
+        - hz-secondary
+    - name: Delete primary Custom configuration for Hazelcast. Used for data-connection
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: primary-custom-config-cm
+            namespace: default
+      tags:
+        - hz-primary
+        - hz
+        - hz-platform
+    - name: Delete Secondary Custom configuration for Hazelcast. Used for data-connection
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: secondary-custom-config-cm
+            namespace: default
+      tags:
+        - hz-secondary
+        - hz
+        - hz-platform
+    - name: UnInstall Hazelcast Operator
+      shell: helm uninstall operator
+      register: command_result
+      failed_when: command_result.rc >= 2
+      tags:
+        - hz-op
+
+    - name: Uninstall Postgres using helm
+      kubernetes.core.helm:
+        name: postgres
+        release_namespace: default
+        state: absent
+      tags:
+        - postgres
+
+    - name: Delete PVC for Postgres
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            namespace: default
+            name: postgres-pvc
+      tags:
+        - postgres
+
+    - name: Delete PV for Postgres
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: PersistentVolume
+          metadata:
+            namespace: default
+            name: postgres-pv
+      tags:
+        - postgres
+
+######################
+## GKE
+######################
+    - name: Delete the GKE cluster node pool
+      gcp_container_node_pool:
+        name: "{{ cluster_name }}-node-pool"
+        project: "{{ project_id }}"
+        auth_kind: serviceaccount
+        service_account_file: "{{ credentials_file }}"
+        zone: "{{ zone }}"
+        cluster: "{{ cluster_name }}"
+        state: absent
+      tags:
+        - node_pool
+        - gke
+    - name: Delete the GKE cluster
+      gcp_container_cluster:
+        name: "{{ cluster_name }}"
+        project: "{{ project_id }}"
+        auth_kind: serviceaccount
+        service_account_file: "{{ credentials_file }}"
+        zone: "{{ zone }}"
+        state: absent
+      tags:
+        - cluster
+        - gke
+    - name: Delete subnet for GKE Cluster
+      gcp_compute_subnetwork:
+        name: "raj-test-network"
+        project: "hazelcast-33"
+        auth_kind: serviceaccount
+        service_account_file: "~/gcp/credentials.json"
+        region: "asia-south1"
+        network: "raj-test-network"
+        ip_cidr_range: 172.16.0.0/16
+        state: absent
+      register: subnet
+      tags:
+        - subnet
+        - network
+        - gke
+    - name: Delete Network for GKE Cluster
+      gcp_compute_network:
+        name: "raj-test-network"
+        project: "hazelcast-33"
+        auth_kind: serviceaccount
+        service_account_file: "~/gcp/credentials.json"
+        state: absent
+      tags:
+        - network
+        - gke
+
+

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: primary-custom-config-cm
+  namespace: default
+data:
+  hazelcast: |-
+    management-center:
+      scripting-enabled: true
+    data-connection:
+      postgres:
+        type: "JDBC"
+        properties:
+          jdbcUrl: "jdbc:postgresql://postgres-postgresql.default.svc.cluster.local:5432/postgres"
+          user: "postgres"
+          password: "hk#uT7@9"

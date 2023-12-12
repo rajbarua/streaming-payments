@@ -1,0 +1,8 @@
+- name: Deploy Hazelcast cluster and application
+  hosts: localhost
+  roles:
+    - gke
+    - postgres
+    - kafka
+    - hz
+

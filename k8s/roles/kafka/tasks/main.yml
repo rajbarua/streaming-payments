@@ -1,0 +1,49 @@
+---
+# Create a namespace for Kafka
+- name: Create a namespace for Kafka
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: kafka
+  tags:
+    - kafka
+    - kafka-init
+# Add strimzi helm repo
+- name: Add helm repo of Strimzi
+  kubernetes.core.helm_repository:
+    name: strimzi
+    repo_url: "https://strimzi.io/charts/"
+    force_update: true
+  tags:
+    - kafka
+    - kafka-init
+# Install Strimzi
+- name: Install Strimzi
+  shell: helm install strimzi strimzi/strimzi-kafka-operator -n kafka
+  register: command_result
+  failed_when: command_result.rc >= 2
+  tags:
+    - kafka
+    - kafka-init
+# Wait for Strimzi to be ready
+- name: Wait for Strimzi to be ready
+  shell: "kubectl wait --for=condition=ready pod -l name=strimzi-cluster-operator --timeout=300s -n kafka"
+  tags:
+    - kafka
+    - kafka-init
+# Create Kafka cluster
+- name: Create Kafka cluster
+  shell: kubectl apply -f https://strimzi.io/examples/latest/kafka/kafka-ephemeral.yaml -n kafka
+  tags:
+    - kafka
+    - kafka-init
+# Wait for Kafka cluster to be ready
+- name: Wait for Kafka cluster to be ready
+  shell: "kubectl wait --for=condition=ready pod -l strimzi.io/name=kafka --timeout=300s -n kafka"
+  tags:
+    - kafka
+    - kafka-init
+

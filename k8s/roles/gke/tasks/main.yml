@@ -1,0 +1,102 @@
+---
+# tasks file for k8s/roles/gke
+- name: Create Network for GKE Cluster
+  gcp_compute_network:
+    name: "{{ cluster_name }}-network"
+    project: "{{ project_id }}"
+    auth_kind: serviceaccount
+    service_account_file: "{{ credentials_file }}"
+    auto_create_subnetworks: "false"
+    state: present
+  register: network
+  tags:
+    - network
+    - gke
+- name: Create a subnet for GKE Cluster
+  gcp_compute_subnetwork:
+    name: "{{ cluster_name }}-network"
+    project: "{{ project_id }}"
+    auth_kind: serviceaccount
+    service_account_file: "{{ credentials_file }}"
+    region: "{{ region }}"
+    network: "{{ network }}"
+    ip_cidr_range: 172.16.0.0/16
+    state: present
+  register: subnet
+  tags:
+      - subnet
+      - network
+      - gke
+
+- name: Create the GKE cluster
+  gcp_container_cluster:
+    name: "{{ cluster_name }}"
+    project: "{{ project_id }}"
+    resource_labels:
+      keep: 1d
+    auth_kind: serviceaccount
+    service_account_file: "{{ credentials_file }}"
+    zone: "{{ zone }}"
+    network: "{{ cluster_name }}-network"
+    subnetwork: "{{ cluster_name }}-network"
+    initial_node_count: "{{ initial_node_count }}"
+    node_config:
+      machine_type: "{{ machine_type }}"
+      disk_size_gb: "{{ disk_size_gb }}"
+      disk_type: "{{ disk_type }}"
+    state: present
+  register: cluster
+  tags:
+    - cluster
+    - gke
+- name: Create the GKE cluster node pool
+  gcp_container_node_pool:
+    name: "{{ cluster_name }}-node-pool"
+    project: "{{ project_id }}"
+    auth_kind: serviceaccount
+    service_account_file: "{{ credentials_file }}"
+    zone: "{{ zone }}"
+    cluster: "{{ cluster }}"
+    config:
+      machine_type: "{{ machine_type }}"
+      disk_size_gb: "{{ disk_size_gb }}"
+      disk_type: "{{ disk_type }}"
+    initial_node_count: "{{ initial_node_count }}"
+    state: present
+  register: node_pool
+  tags:
+    - node_pool
+    - gke
+
+- name: authorize access to Google Cloud with a service account
+  shell: "gcloud auth activate-service-account --key-file={{ credentials_file }}"
+  tags:
+    - gke
+
+- name: Get the GKE cluster credentials using gcloud and shell
+  #https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl
+  shell: "gcloud container clusters get-credentials {{ cluster_name }} --zone {{ zone }} --project {{ project_id }}"
+  args:
+    executable: /bin/bash
+  tags:
+    - gke
+- name: configure Docker to use the Google Cloud CLI to authenticate requests to Artifact Registry
+  #https://cloud.google.com/artifact-registry/docs/docker/store-docker-container-images#linux
+  shell: "gcloud auth configure-docker {{ region }}-docker.pkg.dev"
+  tags:
+    - gke
+- name: Create a Secret from the credentials file
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gcp-credentials
+        namespace: default
+      type: Opaque
+      data:
+        google-credentials-path: "{{ lookup('file', credentials_file) | b64encode }}"
+  tags:
+    - gke
+

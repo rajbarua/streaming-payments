@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: primary-custom-config-cm
+  namespace: default
+data:
+  hazelcast: |-
+    management-center:
+      scripting-enabled: true
+    data-connection:
+      postgres:
+        type: "JDBC"
+        properties:
+          jdbcUrl: "jdbc:postgresql://postgres-postgresql.default.svc.cluster.local:5432/postgres"
+          user: "postgres"
+          password: "hk#uT7@9"
+    wan-replication:
+      secondary-wan-rep:
+        batch-publisher:
+          secondaryPublisherId:
+            cluster-name: hz-secondary
+            target-endpoints: {{ hz_secondary_ips.stdout }}:5710
+    map:
+      account:
+        wan-replication-ref:
+           secondary-wan-rep:
+                merge-policy-class-name: PassThroughMergePolicy
+                republishing-enabled: true
+        map-store:
+          enabled: true
+          initial-mode: LAZY
+          class-name: com.hz.txstream.domainstore.AccountStore
+          properties:
+            jdbcUrl: "jdbc:postgresql://postgres-postgresql.default.svc.cluster.local:5432/postgres"
+            user: "postgres"
+            password: "hk#uT7@9"
+            driverClassName: "org.postgresql.Driver"
+      merchant:
+        wan-replication-ref:
+          secondary-wan-rep:
+            merge-policy-class-name: PassThroughMergePolicy
+            republishing-enabled: true
+        map-store:
+          enabled: true
+          initial-mode: LAZY
+          class-name: com.hz.txstream.domainstore.MerchantStore
+          properties:
+            jdbcUrl: "jdbc:postgresql://postgres-postgresql.default.svc.cluster.local:5432/postgres"
+            user: "postgres"
+            password: "hk#uT7@9"
+            driverClassName: "org.postgresql.Driver"
+      transaction:
+        wan-replication-ref:
+          secondary-wan-rep:
+            merge-policy-class-name: PassThroughMergePolicy
+            republishing-enabled: true
+        map-store:
+          enabled: true
+          initial-mode: LAZY
+          class-name: com.hz.txstream.domainstore.TransactionStore
+          properties:
+            jdbcUrl: "jdbc:postgresql://postgres-postgresql.default.svc.cluster.local:5432/postgres"
+            user: "postgres"
+            password: "hk#uT7@9"
+            driverClassName: "org.postgresql.Driver"
+      rulesresult:
+        wan-replication-ref:
+          secondary-wan-rep:
+            merge-policy-class-name: PassThroughMergePolicy
+            republishing-enabled: true
