@@ -123,7 +123,6 @@
         namespace: default
         name: hz-secondary
       spec:
-        customConfigCmName: secondary-custom-config-cm
         clusterSize: "{{ secondary_cluster_size }}"
         repository: 'docker.io/hazelcast/hazelcast-enterprise'
         version: "{{ hazelcast_version }}"
@@ -137,8 +136,8 @@
           type: Smart
           discoveryServiceType: LoadBalancer
           memberAccess: LoadBalancer
-       tls:
-         secretName: hazelcast-ssl
+        tls:
+          secretName: hazelcast-ssl
   tags:
     - hz-secondary
     - hz
@@ -209,8 +208,8 @@
           type: Smart
           discoveryServiceType: LoadBalancer
           memberAccess: LoadBalancer
-       tls:
-         secretName: hazelcast-ssl
+        tls:
+          secretName: hazelcast-ssl
   tags:
     - hz-primary
     - hz
@@ -250,12 +249,12 @@
         hazelcastClusters:
           - address: hz-primary
             name: hz-primary
-           tls:
-             secretName: hazelcast-ssl
+            tls:
+              secretName: hazelcast-ssl
           - address: hz-secondary
             name: hz-secondary
-           tls:
-             secretName: hazelcast-ssl
+            tls:
+              secretName: hazelcast-ssl
         persistence:
           enabled: true
           size: 1Gi
@@ -273,20 +272,20 @@
 ## WAN Replication
 ######################
 - name: Setup WAN replication between primary and secondary clusters
- kubernetes.core.k8s:
-   state: present
-   definition:
-     apiVersion: hazelcast.com/v1alpha1
-     kind: WanReplication
-     metadata:
-       namespace: default
-       name: hazelcast-wan-replication
-     spec:
-       resources:
-         - name: hz-primary
-           kind: Hazelcast
-       targetClusterName: hz-secondary
-       endpoints: "{{ hz_secondary_ips.stdout }}:5710"
- tags:
-   - wan
-   - hz
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: hazelcast.com/v1alpha1
+      kind: WanReplication
+      metadata:
+        namespace: default
+        name: hazelcast-wan-replication
+      spec:
+        resources:
+          - name: hz-primary
+            kind: Hazelcast
+        targetClusterName: hz-secondary
+        endpoints: "{{ hz_secondary_ips.stdout }}:5710"
+  tags:
+    - wan
+    - hz

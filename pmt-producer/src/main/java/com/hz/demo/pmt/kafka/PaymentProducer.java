@@ -65,7 +65,7 @@ public class PaymentProducer {
         System.out.println("Producing " + rate + " payments per second");
         long interval = TimeUnit.SECONDS.toNanos(1) / rate;
         ThreadLocalRandom rnd = ThreadLocalRandom.current();
-        var banks = getAllBank("bank.txt");
+        var banks = getAllBank("banks.txt");
         while (true) {
             for (int i = 0; i < MAX_BATCH_SIZE; i++) {
                 if (System.nanoTime() < emitSchedule) {

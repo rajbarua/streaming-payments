@@ -4,3 +4,7 @@ primary_cluster_size: 3
 secondary_cluster_size: 3
 hazelcast_version: 5.3.6
 hazelcast_mc_version: 5.3.3
+self_signed_cert_key_file: "~/hazelcast/hazelcast.key"
+self_signed_cert_cert_file: "~/hazelcast/hazelcast.pem"
+self_signed_cert_keystore_file: "~/hazelcast/hazelcast-keystore.jks"
+
