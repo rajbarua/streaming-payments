@@ -9,6 +9,7 @@ permissions to create GKE. The service account must be downloaded as a JSON file
 4. Helm installed in local machine
 5. Hazelcast CLC installed in local machine
 6. Maven installed in local machine
+7. Scaffold installed in local machine
 7. Hazelcast License key present in file `~/hazelcast/hazelcast.license` in local machine
 8. Google Auth plugin installed pip - `pip3 install google-auth` in local machine
 9. Install `gloud` via `brew install google-cloud-sdk` and `gke-gcloud-auth-plugin` via `gcloud components install gke-gcloud-auth-plugin` in local machine

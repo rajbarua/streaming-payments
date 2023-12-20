@@ -1,0 +1,20 @@
+apiVersion: skaffold/v4beta5
+kind: Config
+metadata:
+  name: kafka-kubernetes
+build:
+  artifacts:
+    - image: pmt-producer
+      jib:
+        project: pmt-producer
+manifests:
+  rawYaml:
+    - k8s/roles/pmt-producer/files/*.yaml
+deploy:
+  kubectl: {}
+profiles:
+  - name: kafka-strimzi
+    manifests:
+      rawYaml:
+        - k8s/roles/pmt-producer/files/*.yaml
+        # - k8s/kafka-*.yaml
