@@ -63,7 +63,7 @@ public class SenderService {
 
     private List<String> getAllBank(String filePath) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                PaymentProducer.class.getResourceAsStream(filePath), UTF_8))) {
+                PaymentProducerSping.class.getResourceAsStream(filePath), UTF_8))) {
             return reader.lines().collect(toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
