@@ -1,4 +1,0 @@
----
-# vars file for k8s/roles/hz
-primary_cluster_size: 3
-secondary_cluster_size: 3

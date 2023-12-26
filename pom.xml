@@ -2,10 +2,12 @@
     <properties>
         <kafka.version>2.3.0</kafka.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>17</java.version>
+        <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-boot.version>3.1.5</spring-boot.version>
+        <jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
+        <image>${env.region}-docker.pkg.dev/${env.project_id}/${env.repository_id}/${project.artifactId}</image>
     </properties>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.hz.demo</groupId>
@@ -14,17 +16,24 @@
     <packaging>pom</packaging>
     <modules>
         <module>pmt-producer</module>
+        <module>pmt-job</module>
     </modules>
-
+    <repositories>
+        <repository>
+            <id>Hazelcast Private Release Repository</id>
+            <url>https://repository.hazelcast.com/release/</url>
+        </repository>
+    </repositories>
     <build>
-        <plugins>
-            <plugin>
-                <!-- simplifies creation of images out of java projects-->
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-                <version>3.4.0</version>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <!-- simplifies creation of images out of java projects-->
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>${jib-maven-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
-
 </project>

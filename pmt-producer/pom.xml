@@ -20,7 +20,17 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-        </plugins>
+            <plugin>
+                <!-- simplifies creation of images out of java projects-->
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <configuration>
+                    <from>
+                        <image>eclipse-temurin:17-jre</image>
+                    </from>
+                </configuration>
+            </plugin>
+    </plugins>
     </build>
     <dependencies>
         <dependency>

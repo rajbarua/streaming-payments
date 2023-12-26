@@ -5,4 +5,5 @@
     - postgres
     - kafka
     - hz
+    - pmt-job
 

@@ -9,12 +9,11 @@ build:
         project: pmt-producer
 manifests:
   rawYaml:
-    - k8s/roles/pmt-producer/files/*.yaml
+    - k8s/roles/pmt-job/files/deployment.yaml
 deploy:
   kubectl: {}
 profiles:
   - name: kafka-strimzi
     manifests:
       rawYaml:
-        - k8s/roles/pmt-producer/files/*.yaml
-        # - k8s/kafka-*.yaml
+        - k8s/roles/pmt-job/files/deployment.yaml

@@ -16,12 +16,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class PaymentProducerSping {
+public class PaymentProducerSpring {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PaymentProducerSping.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PaymentProducerSpring.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(PaymentProducerSping.class, args);
+        SpringApplication.run(PaymentProducerSpring.class, args);
     }
 
     @Bean

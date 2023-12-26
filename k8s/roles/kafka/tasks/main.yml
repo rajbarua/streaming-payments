@@ -20,6 +20,20 @@
     - prometheus
     - kafka
 ######################
+## Jeager
+######################
+# Create namespace observability for Jeager
+- name: Create namespace observability for Jeager
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: observability
+  tags:
+    - jeager
+######################
 ## Strimzi
 ######################
 # Add strimzi helm repo
@@ -69,7 +83,7 @@
         labels:
           strimzi.io/cluster: my-cluster
       spec:
-        replicas: 3
+        replicas: 2 #3
         roles: 
           - controller
           - broker
@@ -251,10 +265,10 @@
       spec:
         kafka:
           config:
-            offsets.topic.replication.factor: 3
-            transaction.state.log.replication.factor: 3
-            transaction.state.log.min.isr: 2
-            default.replication.factor: 3
+            offsets.topic.replication.factor: 2 #3
+            transaction.state.log.replication.factor: 2 #3
+            transaction.state.log.min.isr: 1 #2
+            default.replication.factor: 2 #3
             min.insync.replicas: 2
             inter.broker.protocol.version: '3.6'
           storage: # (2)
@@ -269,7 +283,7 @@
               type: internal
               tls: true
           version: 3.6.0
-          replicas: 3
+          replicas: 2 #3
           metricsConfig: # (3)
             type: jmxPrometheusExporter
             valueFrom:
@@ -284,7 +298,7 @@
         zookeeper:
           storage:
             type: ephemeral
-          replicas: 3
+          replicas: 2 #3
   tags:
     - kafka
     - kafka-crd
@@ -299,6 +313,7 @@
   tags:
     - kafka
     - kafka-crd
+    - kafka-cluster
   
 
 # Create a topic called payments
@@ -310,12 +325,12 @@
       kind: KafkaTopic
       metadata:
         name: payments
-        namespace: kafka
+        # namespace: kafka
         labels:
           strimzi.io/cluster: my-cluster
       spec:
         partitions: 12
-        replicas: 3
+        replicas: 2 #3
         config:
           retention.ms: 7200000
   tags:

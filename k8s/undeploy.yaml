@@ -1,32 +1,56 @@
-- name: Deploy Hazelcast cluster and application
+- name: UnDeploy Hazelcast cluster and application
   hosts: localhost
   tasks:
-######################
-## Kafka
-######################
-  - name: Delete Kafka Topic
+  - name: Delete Hazelcast MC
     kubernetes.core.k8s:
       state: absent
       definition:
-        apiVersion: kafka.strimzi.io/v1beta1
-        kind: KafkaTopic
+        apiVersion: hazelcast.com/v1alpha1
+        kind: ManagementCenter
         metadata:
-          name: payments
-          namespace: kafka
-          labels:
-            strimzi.io/cluster: my-cluster
+          name: hazelcast-mc
+          namespace: default
     tags:
-      - kafka
-      - topic
-  - name: Delete Kafka Cluster
+      - hz
+      - mc
+  - name: Setup WAN replication between primary and secondary clusters
     kubernetes.core.k8s:
       state: absent
       definition:
-        apiVersion: kafka.strimzi.io/v1beta2
-        kind: Kafka
+        apiVersion: hazelcast.com/v1alpha1
+        kind: WanReplication
         metadata:
-          name: my-cluster
-          namespace: kafka
+          namespace: default
+          name: hazelcast-wan-replication
     tags:
-      - kafka
+      - wan
+      - hz
+  - name: Delete hz-primary and hz-secondary clusters in a loop
+    kubernetes.core.k8s:
+      state: absent
+      definition:
+        apiVersion: hazelcast.com/v1alpha1
+        kind: Hazelcast
+        metadata:
+          name: "{{ item }}"
+          namespace: default
+    loop:
+      - hz-primary
+      - hz-secondary
+    tags:
+      - hz
       - cluster
+
+
+######################
+## All
+######################
+  - name: Delete everything via kubectl
+    shell: "kubectl delete all --all -n {{ item }}"
+    loop:
+      - default
+      - kafka
+      - monitoring
+    tags:
+      - kafka
+      - all
