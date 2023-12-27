@@ -2,3 +2,4 @@
 target
 pmt-producer/target
 ./pmt-consumer/target
+images/.$*

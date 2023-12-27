@@ -4,6 +4,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.jet.Job;
 import com.hazelcast.jet.config.JobConfig;
+import com.hazelcast.jet.config.ProcessingGuarantee;
 import com.hazelcast.jet.kafka.KafkaSources;
 import com.hazelcast.jet.pipeline.DataConnectionRef;
 import com.hazelcast.jet.pipeline.Pipeline;
@@ -28,6 +29,7 @@ public class PaymentAggregator {
         Pipeline p = createPipeline(topic);
         JobConfig jobConfig = new JobConfig()
             .setName(JOB_NAME)
+            .setProcessingGuarantee(ProcessingGuarantee.EXACTLY_ONCE)
             .addClass(PaymentAggregator.class);
         Job oldJob = instance.getJet().getJob(JOB_NAME);
         if (oldJob != null) {

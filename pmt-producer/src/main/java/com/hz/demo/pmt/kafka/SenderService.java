@@ -30,13 +30,13 @@ public class SenderService {
     @Autowired
     KafkaTemplate<String, Payment> template;
 
-    @Value("${POD:kafka-producer}")
+    @Value("${POD:pmt-producer}")
     private String pod;
     @Value("${NAMESPACE:empty}")
     private String namespace;
     @Value("${CLUSTER:localhost}")
     private String cluster;
-    @Value("${TOPIC:info}")
+    @Value("${TOPIC:payments}")
     private String topic;
 
     @Scheduled(fixedRate = 1000)
@@ -47,7 +47,7 @@ public class SenderService {
         Payment payment = createPayment(id, rnd, banks);
         CompletableFuture<SendResult<String, Payment>> result = template.send(topic, payment.getId(), payment);
         result.whenComplete((sr, ex) ->
-                LOG.info("Sent({}): {}", sr.getProducerRecord().key(), sr.getProducerRecord().value()));
+                LOG.info("Sent({}): {}. With any Exception: {}", sr.getProducerRecord().key(), sr.getProducerRecord().value(), ex));
     }
 
     private Payment createPayment(String id, ThreadLocalRandom rnd, List<String> banks) {
