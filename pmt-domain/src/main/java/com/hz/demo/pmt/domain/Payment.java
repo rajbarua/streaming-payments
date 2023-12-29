@@ -1,4 +1,4 @@
-package com.hz.demo.pmt.kafka;
+package com.hz.demo.pmt.domain;
 
 /**
  * A pain.001 message.
@@ -44,7 +44,12 @@ public class Payment {
         public String getCurrency() {
             return currency;
         }
-    
+        public long getTimestamp() {
+            return timestamp;
+        }
+        public void setTimestamp(long timestamp) {
+            this.timestamp = timestamp;
+        }
     
         @Override
         public String toString() {

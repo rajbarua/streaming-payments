@@ -58,8 +58,7 @@ _Work in progress_
 1. Open file `pmt-producer/pom.xml` and uncomment the `platform` tag appropriate to your laptop (mac or linux). For GKE deployment, both platforms are built. See [this](https://github.com/GoogleContainerTools/jib/blob/master/docs/faq.md#how-do-i-specify-a-platform-in-the-manifest-list-or-oci-index-of-a-base-image)
 
 ### Steps
-1. Compile the projects `pmt-producer` and `pmt-job` using `mvn clean install` in the respective directories.
-1. Deploy `pmt-producer` and run docker as `mvn jib:dockerBuild -Dimage=pmt-producer && docker-compose up -d`. See [this](https://stackoverflow.com/questions/61968213/can-jib-be-used-without-a-repository) and [this](https://stackoverflow.com/questions/60862687/how-to-create-docker-compose-yml-file-while-using-jib).
+1. Compile the java projects and run docker compose as `mvn install jib:dockerBuild -Dimage=pmt-producer && docker-compose up -d`. See [this](https://stackoverflow.com/questions/61968213/can-jib-be-used-without-a-repository) and [this](https://stackoverflow.com/questions/60862687/how-to-create-docker-compose-yml-file-while-using-jib).
 1. You can view the deployment on Hazelcast Management Centre on `http://localhost:8080` and adding the server with name `dev` and address `hz`.
 1. As a one time step you have to add local docker config for Hazelcast CLC using `clc config add docker cluster.address=localhost:5701 cluster.name=dev`
 1. Deploy [data connection](https://docs.hazelcast.com/hazelcast/5.3/data-connections/data-connections-configuration) to the kafka service using `clc -c docker script ./k8s/roles/pmt-job/files/kafka-ds-docker.sql`.

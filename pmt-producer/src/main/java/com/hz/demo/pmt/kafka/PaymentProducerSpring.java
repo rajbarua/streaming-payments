@@ -14,6 +14,8 @@ import org.springframework.kafka.support.micrometer.KafkaRecordSenderContext;
 import org.springframework.kafka.support.micrometer.KafkaTemplateObservationConvention;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.hz.demo.pmt.domain.Payment;
+
 @SpringBootApplication
 @EnableScheduling
 public class PaymentProducerSpring {
