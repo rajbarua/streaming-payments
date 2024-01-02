@@ -9,8 +9,7 @@ import com.hazelcast.nio.serialization.compact.CompactReader;
 import com.hazelcast.nio.serialization.compact.CompactSerializer;
 import com.hazelcast.nio.serialization.compact.CompactWriter;
 
-public class PaymentSerializer 
-    implements CompactSerializer<Payment>, Serializer<Payment>{
+public class PaymentCompactSerializer implements CompactSerializer<Payment>{
         
     private final ObjectMapper objectMapper = new ObjectMapper();
     /**
@@ -49,18 +48,4 @@ public class PaymentSerializer
     public Class<Payment> getCompactClass() {
         return Payment.class;
     }
-    
-    @Override
-    public byte[] serialize(String topic, Payment data) {
-        //use fasterxml to serialise
-        if (data == null) {
-            return null;
-        }
-        try {
-            return objectMapper.writeValueAsBytes(data);
-        } catch (Exception e) {
-            throw new SerializationException(e);
-        }
-    }
-
 }

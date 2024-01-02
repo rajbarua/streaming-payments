@@ -4,7 +4,7 @@ NOT SHARED
 OPTIONS (
     'bootstrap.servers'='broker:9092', 
     'key.deserializer'='org.apache.kafka.common.serialization.StringDeserializer', 
-    'key.serializer'='org.apache.kafka.common.serialization.StringDeserializer',
-    'value.serializer'='org.apache.kafka.common.serialization.StringDeserializer',
+    'key.serializer'='org.apache.kafka.common.serialization.StringSerializer',
+    'value.serializer'='org.apache.kafka.common.serialization.StringSerializer',
     'value.deserializer'='org.apache.kafka.common.serialization.StringDeserializer',
     'auto.offset.reset'='earliest');
