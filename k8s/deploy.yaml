@@ -2,8 +2,9 @@
   hosts: localhost
   roles:
     - gke
-    - postgres
+    - odb23cfree
+    # - postgres
     - kafka
     - hz
-    - pmt-job
+    # - pmt-job
 

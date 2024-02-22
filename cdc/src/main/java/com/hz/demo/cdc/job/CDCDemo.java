@@ -16,10 +16,10 @@ import com.hz.demo.pmt.domain.Payment;
 import com.hz.demo.pmt.domain.PaymentSerializer;
 
 /**
- * A Hazelcast Jet job that reads incoming payments from a Kafka topic and
- * aggregates them by payment bank to total their liquidity position.
+ * A Hazelcast Jet job that reads completed payments in a postgresql database and inserts that
+ * into Hazelcast IMap called completedpayments.
  */
-public class PaymentAggregator {
+public class CDCDemo {
 
     // the topic read from environment variable
     public static final String TOPIC = "payments";

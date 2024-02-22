@@ -99,4 +99,3 @@
         google-credentials-path: "{{ lookup('file', credentials_file) | b64encode }}"
   tags:
     - gke
-

@@ -1,0 +1,50 @@
+---
+# Oracle DB 23c Free
+# from https://github.com/llixandru/oracle-db23c-free and https://medium.com/@liana.lixandru/deploying-oracle-database-23c-free-developer-release-on-kubernetes-with-helm-4b2542566bea
+- name: Print a warning message
+  debug:
+    msg: "Warning: See section on redo_log_catalog in https://debezium.io/blog/2022/09/30/debezium-oracle-series-part-1/ and manually change Group 1 when is INACTIVE"
+  
+- name: Clone the helm git repository
+  git:
+    repo: https://github.com/llixandru/oracle-db23c-free
+    dest: /tmp/oracle-db23c-free
+    version: main
+    force: true
+  tags:
+    - oracle
+- name: Create helm package from the repository
+  shell: helm package oracle-db23c-free
+  args:
+    chdir: /tmp
+  tags:
+    - oracle
+- name: Install Oracle DB 23c Free. Ignore if already installed
+  shell: helm install --set persistence.storageClass=standard-rwo oracle-db23c-free --set enable_archivelog=true oracle-db23c-free-1.0.0.tgz
+  register: command_result
+  failed_when: 
+    - command_result.rc != 0
+    - "'still in use' not in command_result.stderr"
+  args:
+    chdir: /tmp
+  tags:
+    - oracle
+- name: Wait for Oracle DB 23c Free to be ready
+  shell: kubectl wait --for=condition=ready pod -l app=oracle-db23c-free-oracle-db23c-free --timeout=900s
+  tags:
+    - oracle
+- name: Read the secret oracle-db23c-free-oracle-db23c-free for value under key oracle_pwd
+  shell: |
+    kubectl get secret oracle-db23c-free-oracle-db23c-free -o jsonpath="{.data.oracle_pwd}" | base64 --decode
+  register: secret_value
+  tags:
+    - oracle
+    - kafka
+    - kafka-connect
+    - kafka-connector
+# TODO See https://container-registry.oracle.com/ords/f?p=113:4:106652417405591:::4:P4_REPOSITORY,AI_REPOSITORY,AI_REPOSITORY_NAME,P4_REPOSITORY_NAME,P4_EULA_ID,P4_BUSINESS_AREA_ID:1863,1863,Oracle%20Database%20Free,Oracle%20Database%20Free,1,0&cs=3eoeIWgF4tP2wM5IczA6pwvogAU5FDqBzxpXkGF1SxkvA-v0-XS0F9mk868c4U6MeyXVePaRy_mdEjCl_kXjk-Q on running scripts
+# - name: Execute sql file archivelogs.sql
+#   shell: |
+#     kubectl exec -i $(kubectl get pod -l app=oracle-db23c-free-oracle-db23c-free -o jsonpath="{.items[0].metadata.name}") -- bash -c "sqlplus -s / as sysdba"
+#   tags:
+#     - oracle

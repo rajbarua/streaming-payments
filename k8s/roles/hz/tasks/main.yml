@@ -9,7 +9,7 @@
     - hz-init
 # tasks file for k8s/roles/hz
 - name: Install Hazelcast Operator
-  shell: helm install operator hazelcast/hazelcast-platform-operator --version=5.10.0 --set=installCRDs=true
+  shell: helm install hzoperator hazelcast/hazelcast-platform-operator --version=5.10.0 --set=installCRDs=true
   register: command_result
   failed_when: command_result.rc >= 2
   tags:

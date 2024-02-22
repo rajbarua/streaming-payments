@@ -1,56 +1,18 @@
-- name: UnDeploy Hazelcast cluster and application
+- name: Deploy Hazelcast cluster and application
   hosts: localhost
-  tasks:
-  - name: Delete Hazelcast MC
-    kubernetes.core.k8s:
-      state: absent
-      definition:
-        apiVersion: hazelcast.com/v1alpha1
-        kind: ManagementCenter
-        metadata:
-          name: hazelcast-mc
-          namespace: default
-    tags:
-      - hz
-      - mc
-  - name: Setup WAN replication between primary and secondary clusters
-    kubernetes.core.k8s:
-      state: absent
-      definition:
-        apiVersion: hazelcast.com/v1alpha1
-        kind: WanReplication
-        metadata:
-          namespace: default
-          name: hazelcast-wan-replication
-    tags:
-      - wan
-      - hz
-  - name: Delete hz-primary and hz-secondary clusters in a loop
-    kubernetes.core.k8s:
-      state: absent
-      definition:
-        apiVersion: hazelcast.com/v1alpha1
-        kind: Hazelcast
-        metadata:
-          name: "{{ item }}"
-          namespace: default
-    loop:
-      - hz-primary
-      - hz-secondary
-    tags:
-      - hz
-      - cluster
-
+# - name: Delete Hazelcast WAN replication
+#   shell: "kubectl delete wanreplications.hazelcast.com hazelcast-wan-replication"
 
 ######################
 ## All
 ######################
-  - name: Delete everything via kubectl
-    shell: "kubectl delete all --all -n {{ item }}"
-    loop:
-      - default
-      - kafka
-      - monitoring
-    tags:
-      - kafka
-      - all
+- name: Delete everything via kubectl
+
+  shell: "kubectl delete all --all -n {{ item }}"
+  loop:
+    - default
+    - kafka
+    - monitoring
+  tags:
+    - kafka
+    - all
