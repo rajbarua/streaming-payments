@@ -6,5 +6,5 @@
     # - postgres
     - kafka
     - hz
-    # - pmt-job
+    - cdc-job
 

@@ -6,7 +6,7 @@
         <artifactId>pmt</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>cdc-job</artifactId>
+    <artifactId>cdc</artifactId>
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <resources>
@@ -25,6 +25,44 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>io.debezium:debezium-connector-oracle</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <descriptors>
+                      <descriptor>src/assembly/dep.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                      <id>create-archive</id>
+                      <phase>package</phase>
+                      <goals>
+                        <goal>single</goal>
+                      </goals>
+                    </execution>
+                  </executions>
+            </plugin> -->
         </plugins>
     </build>
     <dependencies>
@@ -40,8 +78,24 @@
         <dependency>
             <groupId>com.hazelcast.jet</groupId>
             <artifactId>hazelcast-jet-kafka</artifactId>
-            <version>5.3.6</version>
+            <version>${hazelcast.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.hazelcast.jet</groupId>
+            <artifactId>hazelcast-jet-cdc-debezium</artifactId>
+            <version>${hazelcast.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.debezium</groupId>
+            <artifactId>debezium-connector-oracle</artifactId>
+            <version>1.9.7.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>io.debezium</groupId>
+            <artifactId>debezium-core</artifactId>
+            <version>1.9.7.Final</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

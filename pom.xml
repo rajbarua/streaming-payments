@@ -19,6 +19,7 @@
         <module>pmt-producer</module>
         <module>pmt-job</module>
         <module>pmt-domain</module>
+        <module>cdc</module>
     </modules>
     <dependencyManagement>
         <dependencies>

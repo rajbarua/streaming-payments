@@ -429,35 +429,38 @@
   tags:
     - kafka
     - kafka-connect
-- name: Create KafkaConnector so that Oracle connection properties can be set
-# https://strimzi.io/docs/operators/latest/overview#configuration-points-connect_str - KafkaConnector management of connectors
-# https://debezium.io/documentation/reference/stable/connectors/oracle.html#oracle-example-configuration
-  kubernetes.core.k8s:
-    state: present
-    definition:
-      apiVersion: kafka.strimzi.io/v1beta2
-      kind: KafkaConnector
-      metadata:
-        name: debezium-connector
-        namespace: kafka
-        labels:
-          strimzi.io/cluster: debezium-connect
-      spec:
-        class: io.debezium.connector.oracle.OracleConnector
-        tasksMax: 1
-        autoRestart: # (5)
-          enabled: true
-        config:
-          database.hostname: "oracle-db23c-free-oracle-db23c-free.default.svc.cluster.local"
-          database.port: "1521"
-          database.user: "c##dbzuser"
-          database.password: "{{ secret_value.stdout }}"
-          database.dbname: "FREE"
-          topic.prefix : "free"
-          schema.history.internal.kafka.bootstrap.servers: "my-cluster-kafka-bootstrap.kafka.svc:9092"
-          schema.history.internal.kafka.topic: "schema-changes.oracle"
-          database.pdb.name: "FREEPDB1"
-  tags:
-    - kafka
-    - kafka-connect
-    - kafka-connector
+
+# This bit will be executed by Hazelcast
+# - name: Create KafkaConnector so that Oracle connection properties can be set
+# # https://strimzi.io/docs/operators/latest/overview#configuration-points-connect_str - KafkaConnector management of connectors
+# # https://debezium.io/documentation/reference/stable/connectors/oracle.html#oracle-example-configuration
+#   kubernetes.core.k8s:
+#     state: present
+#     definition:
+#       apiVersion: kafka.strimzi.io/v1beta2
+#       kind: KafkaConnector
+#       metadata:
+#         name: debezium-connector
+#         namespace: kafka
+#         labels:
+#           strimzi.io/cluster: debezium-connect
+#       spec:
+#         class: io.debezium.connector.oracle.OracleConnector
+#         tasksMax: 1
+#         autoRestart: # (5)
+#           enabled: true
+#         config:
+#           database.hostname: "oracle-db23c-free-oracle-db23c-free.default.svc.cluster.local"
+#           database.port: "1521"
+#           database.user: "c##dbzuser"
+#           database.password: dbz
+#           database.dbname: "FREE"
+#           topic.prefix : "server1"
+#           # table.include.list : "C##DBZUSER.CUSTOMERS"
+#           schema.history.internal.kafka.bootstrap.servers: "my-cluster-kafka-bootstrap.kafka.svc:9092"
+#           schema.history.internal.kafka.topic: "schema-changes.oracle"
+#           database.pdb.name: "FREEPDB1"
+#   tags:
+#     - kafka
+#     - kafka-connect
+#     - kafka-connector
