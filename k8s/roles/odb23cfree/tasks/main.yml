@@ -19,6 +19,7 @@
     chdir: /tmp
   tags:
     - oracle
+
 - name: Install Oracle DB 23c Free. Ignore if already installed
   shell: helm install --set persistence.storageClass=standard-rwo oracle-db23c-free --set enable_archivelog=true oracle-db23c-free-1.0.0.tgz
   register: command_result

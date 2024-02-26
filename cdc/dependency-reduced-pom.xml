@@ -36,6 +36,8 @@
               <artifactSet>
                 <includes>
                   <include>io.debezium:debezium-connector-oracle</include>
+                  <include>io.debezium:debezium-ddl-parser</include>
+                  <include>org.antlr:antlr4-runtime</include>
                 </includes>
               </artifactSet>
             </configuration>
@@ -67,12 +69,6 @@
       <groupId>com.hazelcast.jet</groupId>
       <artifactId>hazelcast-jet-cdc-debezium</artifactId>
       <version>5.3.6</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.debezium</groupId>
-      <artifactId>debezium-core</artifactId>
-      <version>1.9.7.Final</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

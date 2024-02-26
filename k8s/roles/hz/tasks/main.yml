@@ -36,7 +36,7 @@
       data:
         license-key: "{{ lookup('file', '~/hazelcast/hazelcast.license') | b64encode }}"
   tags:
-    - always
+    - hz
 ######################
 ## SSL
 ## https://docs.ansible.com/ansible/latest/collections/community/crypto/docsite/guide_selfsigned.html

@@ -50,17 +50,15 @@ public class CDCOracle {
                 .setProperty("database.dbname", "FREE")
                 .setProperty("database.pdb.name", "FREEPDB1")
                 .setProperty("tasks.max", "1")
-                .setProperty("table.include.list", "C##DBZUSER.CUSTOMERS")
+                // .setProperty("table.include.list", ".CUSTOMERS")
                 // Debezium 1.9.x
                 .setProperty("database.server.name", "server1")
-                .setProperty("database.history.kafka.bootstrap.servers", "my-cluster-kafka-bootstrap.kafka.svc:9092")
-                .setProperty("database.history.kafka.topic", "schema-changes.inventory")
-                //Debezium 2.5.x
-                .setProperty("topic.prefix", "server1") 
-                .setProperty("schema.history.internal.kafka.bootstrap.servers", "my-cluster-kafka-bootstrap.kafka.svc:9092")
-                .setProperty("schema.history.internal.kafka.topic", "schema-changes.oracle")
+                // .setProperty("database.history.kafka.bootstrap.servers", "my-cluster-kafka-bootstrap.kafka.svc:9092")
+                // .setProperty("database.history.kafka.topic", "schema-changes.inventory")
                 .build())
-            .withNativeTimestamps(0)
+            // .withNativeTimestamps(0)
+            .withIngestionTimestamps()
+            .peek()
             .writeTo(Sinks.logger());
                 
         return pipeline;

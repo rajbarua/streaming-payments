@@ -39,30 +39,14 @@
                             <artifactSet>
                                 <includes>
                                     <include>io.debezium:debezium-connector-oracle</include>
+                                    <include>io.debezium:debezium-ddl-parser</include>
+                                    <include>org.antlr:antlr4-runtime</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-            <!-- <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <descriptors>
-                      <descriptor>src/assembly/dep.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                      <id>create-archive</id>
-                      <phase>package</phase>
-                      <goals>
-                        <goal>single</goal>
-                      </goals>
-                    </execution>
-                  </executions>
-            </plugin> -->
         </plugins>
     </build>
     <dependencies>
@@ -92,9 +76,19 @@
         </dependency>
         <dependency>
             <groupId>io.debezium</groupId>
-            <artifactId>debezium-core</artifactId>
+            <artifactId>debezium-ddl-parser</artifactId>
             <version>1.9.7.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.8</version>
+        </dependency>
+        <!-- <dependency>
+            <groupId>io.debezium</groupId>
+            <artifactId>debezium-core</artifactId>
+            <version>1.9.7.Final</version>
+        </dependency> -->
 
         <dependency>
             <groupId>junit</groupId>
