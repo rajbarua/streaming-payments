@@ -26,7 +26,7 @@ spec:
           - name: CLUSTER
             value: c1
           - name: TOPIC
-            value: payments
+            value: credit-transfer-transactions
           - name: POD
             valueFrom:
               fieldRef:

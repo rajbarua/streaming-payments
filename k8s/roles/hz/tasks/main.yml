@@ -113,67 +113,7 @@
 ######################
 ## Clusters
 ######################
-- name: Install Hazelcast secondary cluster
-  kubernetes.core.k8s:
-    state: present
-    definition:
-      apiVersion: hazelcast.com/v1alpha1
-      kind: Hazelcast
-      metadata:
-        namespace: default
-        name: hz-secondary
-      spec:
-        clusterSize: "{{ secondary_cluster_size }}"
-        repository: 'docker.io/hazelcast/hazelcast-enterprise'
-        version: "{{ hazelcast_version }}"
-        licenseKeySecret: hazelcast-license
-        clusterName: hz-secondary
-        jet:
-          resourceUploadEnabled: true
-        userCodeDeployment:
-          clientEnabled: true
-        exposeExternally:
-          type: Smart
-          discoveryServiceType: LoadBalancer
-          memberAccess: LoadBalancer
-        tls:
-          secretName: hazelcast-ssl
-  tags:
-    - hz-secondary
-    - hz
-    - hz-platform
-- name: Wait for all pods in Hazelcast secondary cluster to be ready
-  kubernetes.core.k8s_info:
-    kind: Pod
-    wait: yes
-    namespace: default
-    name: "hz-secondary-{{ item }}"
-    wait_sleep: 10
-    wait_timeout: 360
-  loop: "{{ range(0, secondary_cluster_size)|list }}"
-  tags:
-    - hz-secondary
-    - hz
-    - hz-platform
-- name: Register all the IPs of the hz-secondary cluster
-  #  shell: kubectl get service -l=app.kubernetes.io/instance=hz-secondary,hazelcast.com/service-per-pod -o=jsonpath="{range .items[*]}{.status.loadBalancer.ingress[0].ip}{','}{end}" | sed 's/.$//'kubectl get service -l=app.kubernetes.io/instance=hz-secondary,hazelcast.com/service-per-pod -o=jsonpath="{range .items[*]}{.status.loadBalancer.ingress[0].ip}{','}{end}" | sed 's/.$//'
-  shell: kubectl get service hz-secondary -o=jsonpath="{.status.loadBalancer.ingress[0].ip}"
-  register: hz_secondary_ips
-  tags:
-    - wan
-    - hz
-    - hz-secondary
-    - hz-platform
-    - hz-primary
-- name: Print the list of IPs
-  debug:
-    msg: "Hz Secondary cluster IPs : {{ hz_secondary_ips.stdout }}"
-  tags:
-    - wan
-    - hz
-    - hz-secondary
-    - hz-platform
-    - hz-primary
+
 - name: Custom configuration for primary Hazelcast. Used for data-connection
   kubernetes.core.k8s:
     state: present
@@ -192,7 +132,6 @@
         namespace: default
         name: hz-primary
       spec:
-        customConfigCmName: primary-custom-config-cm
         clusterSize: "{{ primary_cluster_size }}"
         repository: 'docker.io/hazelcast/hazelcast-enterprise'
         version: "{{ hazelcast_version }}"
@@ -207,12 +146,20 @@
           remoteURLs:
           - https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc8/23.3.0.23.09/ojdbc8-23.3.0.23.09.jar
           - https://repo1.maven.org/maven2/com/oracle/database/xml/xdb/23.3.0.23.09/xdb-23.3.0.23.09.jar
+          - https://repo1.maven.org/maven2/io/debezium/debezium-connector-oracle/2.7.3.Final/debezium-connector-oracle-2.7.3.Final.jar
+          - https://repo1.maven.org/maven2/io/debezium/debezium-ddl-parser/2.7.3.Final/debezium-ddl-parser-2.7.3.Final.jar
+          - https://repo1.maven.org/maven2/jakarta/jms/jakarta.jms-api/3.1.0/jakarta.jms-api-3.1.0.jar
         exposeExternally:
           type: Smart
           discoveryServiceType: LoadBalancer
           memberAccess: LoadBalancer
-        tls:
-          secretName: hazelcast-ssl
+        # resources:
+        #   requests:
+        #     memory: "8Gi"
+        #     cpu: "7"
+        #   limits:
+        #     memory: "16Gi"
+        #     cpu: "7"
   tags:
     - hz-primary
     - hz
@@ -252,12 +199,6 @@
         hazelcastClusters:
           - address: hz-primary
             name: hz-primary
-            tls:
-              secretName: hazelcast-ssl
-          - address: hz-secondary
-            name: hz-secondary
-            tls:
-              secretName: hazelcast-ssl
         persistence:
           enabled: true
           size: 1Gi
@@ -272,23 +213,22 @@
 
 
 ######################
-## WAN Replication
+## Create Data Connection
 ######################
-- name: Setup WAN replication between primary and secondary clusters
-  kubernetes.core.k8s:
-    state: present
-    definition:
-      apiVersion: hazelcast.com/v1alpha1
-      kind: WanReplication
-      metadata:
-        namespace: default
-        name: hazelcast-wan-replication
-      spec:
-        resources:
-          - name: hz-primary
-            kind: Hazelcast
-        targetClusterName: hz-secondary
-        endpoints: "{{ hz_secondary_ips.stdout }}:5710"
+- name: Find out the External IP of hz-primary-0
+  shell: "kubectl get service hz-primary-0 -n default -o jsonpath='{.status.loadBalancer.ingress[0].ip}'"
+  register: hz_primary_ip
+  until: hz_primary_ip.stdout != ""
+  retries: 10
+  delay: 10
   tags:
-    - wan
+    - hz
+- name: Add the external IP to CLC config
+  # shell: "clc config add hz-primary cluster.address={{hz_primary_ip.stdout}}:5701 cluster.name=hz-primary ssl.enabled=true ssl.skip-verify=true"
+  shell: "clc config add hz-primary cluster.address={{hz_primary_ip.stdout}}:5701 cluster.name=hz-primary"
+  tags:
+    - hz
+- name: Creat data connections
+  shell: clc -c hz-primary sql "CREATE DATA CONNECTION source_oracle_db TYPE JDBC SHARED OPTIONS ('jdbcUrl'='jdbc:oracle:thin:@//oracle-db23c-free-oracle-db23c-free:1521/FREEPDB1', 'user'='c##dbzuser', 'password'='dbz');"
+  tags:
     - hz

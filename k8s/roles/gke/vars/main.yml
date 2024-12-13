@@ -3,14 +3,14 @@
 zone: asia-south1-a
 region: asia-south1
 location: asia
-project_id: hazelcast-33
+project_id: solution-architects-415712
 gcloud_sa_path: "gcp/credentials.json"
 credentials_file: "{{ lookup('env','HOME') }}/{{ gcloud_sa_path }}"
 repository_id: "rajbarua-docker"
 
 
 # use the section below to enter k8s cluster related information
-cluster_name: raj-test
+cluster_name: raj-pmts
 initial_node_count: 3
 disk_size_gb: 100
 disk_type: pd-ssd
