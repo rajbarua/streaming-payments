@@ -1,34 +1,45 @@
-version: "3.8"
+# export HZ_LICENSEKEY=$(cat ~/hazelcast/demo.license)
+#
 services:
-  broker:
-    image: moeenz/docker-kafka-kraft:latest
-    restart: always
+  kafka:
+    image: "docker.io/apache/kafka:3.7.0"
+    hostname: kafka
+    container_name: kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT_HOST://kafka:9092,PLAINTEXT://kafka:9092"
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29093"
+      KAFKA_LISTENERS: "CONTROLLER://:29093,PLAINTEXT_HOST://0.0.0.0:9092,PLAINTEXT://0.0.0.0:19092"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      CLUSTER_ID: "c94cf7dd-e74a-4048-a532-7cf9dd80dbba"
+      KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_LOG_RETENTION_MS: 60000
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 5000
     ports:
       - "9092:9092"
-    environment:
-      - KRAFT_CONTAINER_HOST_NAME=broker
-  # jaeger:
-  #   image: jaegertracing/all-in-one:latest
-  #   ports:
-  #     - "16686:16686"
-  #     - "4317:4317"
-  #     - "4318:4318"
-  # pmt-producer:
-  #   #https://stackoverflow.com/questions/60862687/how-to-create-docker-compose-yml-file-while-using-jib
-  #   image: pmt-producer:latest
-  #   links:
-  #     - broker
-  #     - jaeger
-  #   environment:
-  #     MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
-  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: broker:9092
+      - "19092:19092"
+      - "29093:29093"
   hz:
-    image: hazelcast/hazelcast-enterprise:5.5.1
+    image: docker.io/hazelcast/hazelcast-enterprise:5.5.2
     ports:
       - "5701:5701"
     environment:
       HZ_CLUSTERNAME: dev
+      # set HZ_LICENSEKEY in the environment with a command like: export HZ_LICENSEKEY=$(cat ~/hazelcast/demo.license)
+      HZ_LICENSEKEY: ${HZ_LICENSEKEY}
+      CLASSPATH: /opt/hazelcast/CLASSPATH_EXT/jakarta/jms/jakarta.jms-api/3.1.0/jakarta.jms-api-3.1.0.jar
+    volumes:
+      - /Users/raj/.m2/repository:/opt/hazelcast/CLASSPATH_EXT
+    depends_on:
+      - kafka
   hz-mc:
     image: hazelcast/management-center:latest-snapshot
     ports:
       - "8080:8080"
+    depends_on:
+      - kafka

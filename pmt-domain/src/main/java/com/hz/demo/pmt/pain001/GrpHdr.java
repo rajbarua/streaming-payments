@@ -1,5 +1,7 @@
 package com.hz.demo.pmt.pain001;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class GrpHdr {
@@ -8,6 +10,7 @@ public class GrpHdr {
 
     @JacksonXmlProperty(localName = "CreDtTm")
     private String creDtTm;
+    private XMLGregorianCalendar creDtTmGC;
 
     @JacksonXmlProperty(localName = "NbOfTxs")
     private int nbOfTxs;
@@ -26,6 +29,13 @@ public class GrpHdr {
         this.msgId = msgId;
     }
 
+    public XMLGregorianCalendar getCreDtTmGC() {
+        return creDtTmGC;
+    }
+
+    public void setCreDtTmGC(XMLGregorianCalendar creDtTm) {
+        this.creDtTmGC = creDtTm;
+    }
     public String getCreDtTm() {
         return creDtTm;
     }

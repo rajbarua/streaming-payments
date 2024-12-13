@@ -1,17 +1,22 @@
 package com.hz.demo.pmt.pain001;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-public class Pain001Generator implements Serializable{
+public class Pain001Generator implements Serializable {
 
     private static final int NUM_PMTINF = Integer.parseInt(System.getenv().getOrDefault("NUM_PMTINF", "1"));
     private static final int NUM_CDTTRFTXINF = Integer.parseInt(System.getenv().getOrDefault("NUM_CDTTRFTXINF", "1"));
@@ -34,6 +39,15 @@ public class Pain001Generator implements Serializable{
         // Get current date and time
         String currentDateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         grpHdr.setCreDtTm(currentDateTime);
+        LocalDateTime now = LocalDateTime.now();
+        GregorianCalendar gregorianCalendar = GregorianCalendar.from(now.atZone(ZoneId.systemDefault()));
+        XMLGregorianCalendar xmlGregorianCalendar;
+        try {
+            xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+        } catch (DatatypeConfigurationException e) {
+            throw new RuntimeException("Error creating XMLGregorianCalendar", e);
+        }
+        grpHdr.setCreDtTmGC(xmlGregorianCalendar);
 
         // Set Payment Information
         // Generate random PmtInf elements
