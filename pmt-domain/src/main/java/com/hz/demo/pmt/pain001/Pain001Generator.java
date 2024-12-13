@@ -18,10 +18,10 @@ public class Pain001Generator implements Serializable{
 
     public static void main(String[] args) throws Exception {
         Pain001Generator gen = new Pain001Generator();
-        gen.outXML(System.out);
+        gen.outXML(System.out, NUM_PMTINF, NUM_CDTTRFTXINF);
     }
 
-    public Document outXML(OutputStream os) {
+    public Document outXML(OutputStream os, int maxPmtinf, int maxCdtTrfTxInf) {
         // mvn exec:java -Dexec.mainClass="com.hz.demos.pain001.Pain001Generator" -pl
         // att-transaction-producer-iso20022
         // Create the Document object
@@ -38,11 +38,11 @@ public class Pain001Generator implements Serializable{
         // Set Payment Information
         // Generate random PmtInf elements
         Random random = new Random();
-        int numberOfPmtInf = random.nextInt(NUM_PMTINF) + 1;
+        int numberOfPmtInf = random.nextInt(maxPmtinf) + 1;
         List<PmtInf> pmtInfList = new ArrayList<>();
         int totalTransactions = 0;
         for (int i = 0; i < numberOfPmtInf; i++) {
-            PmtInf pmtInf = getPmtInf(i);
+            PmtInf pmtInf = getPmtInf(i, maxCdtTrfTxInf);
             pmtInfList.add(pmtInf);
             totalTransactions += pmtInf.getCdtTrfTxInf().size();
         }
@@ -74,7 +74,7 @@ public class Pain001Generator implements Serializable{
         return document;
     }
 
-    private PmtInf getPmtInf(int numPmt) {
+    private PmtInf getPmtInf(int numPmt, int maxCdtTrfTxInf) {
         PmtInf pmtInf = new PmtInf();
         pmtInf.setPmtInfId("PMTINFID12345-" + (numPmt + 1));
         pmtInf.setPmtMtd("TRF");
@@ -100,7 +100,7 @@ public class Pain001Generator implements Serializable{
         pmtInf.setDbtrAgt(dbtrAgt);
 
         Random random = new Random();
-        int numberOfPmtInf = random.nextInt(NUM_CDTTRFTXINF) + 1;
+        int numberOfPmtInf = random.nextInt(maxCdtTrfTxInf) + 1;
         List<CdtTrfTxInf> cdtTrfTxInfList = new ArrayList<>();
         for (int i = 0; i < numberOfPmtInf; i++) {
             CdtTrfTxInf cdtTrfTxInf = createCreditTransferTransactionInformation(i);

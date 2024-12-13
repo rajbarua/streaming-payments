@@ -43,6 +43,10 @@
                             <artifactSet>
                                 <includes>
                                     <include>com.hz.demo:pmt-domain</include>
+									<include>com.fasterxml.jackson.core:jackson-databind</include>
+                                    <include>com.fasterxml.jackson.core:jackson-core</include>
+                                    <include>com.fasterxml.jackson.core:jackson-annotations</include>
+									<include>com.fasterxml.jackson.dataformat:jackson-dataformat-xml</include>
                                 </includes>
                                 <excludes>
                                     <exclude>com.hazelcast:hazelcast-enterprise</exclude>

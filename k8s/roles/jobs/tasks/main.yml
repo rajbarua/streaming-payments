@@ -1,0 +1,39 @@
+---
+######################
+## pipeline via CLC
+######################
+- name: Execute maven pom file to build the jar
+  shell: mvn clean install -f pom.xml
+  args:
+    chdir: ../
+  tags:
+    - jobs
+    - pmt-prod-job
+    - pmt-job
+- name: Find out the External IP of hz-primary-0
+  shell: "kubectl get service hz-primary-0 -n default -o jsonpath='{.status.loadBalancer.ingress[0].ip}'"
+  register: hz_primary_ip
+  until: hz_primary_ip.stdout != ""
+  retries: 10
+  delay: 10
+  tags:
+    - jobs
+    - pmt-prod-job
+    - pmt-job
+- name: Add the external IP to CLC config
+  shell: "clc config add hz-primary cluster.address={{hz_primary_ip.stdout}}:5701 cluster.name=hz-primary"
+  tags:
+    - jobs
+    - pmt-prod-job
+    - pmt-job
+- name: Execute Hazelcast Command Line Client to deploy Payment Job
+  shell: clc -c hz-primary job submit ../pmt-job/target/pmt-job-1.0.0-SNAPSHOT.jar --class com.hz.demo.pmt.job.ReadKafka
+  tags:
+    - jobs
+    - pmt-job
+- name: Execute Hazelcast Command Line Client to deploy Payment Producer job
+  shell: clc -c hz-primary job submit ../pmt-producer/target/pmt-producer-1.0.0-SNAPSHOT.jar --class com.hz.demo.pmt.job.PaymentProducer
+  tags:
+    - jobs
+    - pmt-prod-job
+

@@ -4,5 +4,5 @@
     - gke
     - kafka
     - hz
-    # - cdc-job
+    - jobs
 

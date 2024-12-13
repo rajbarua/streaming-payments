@@ -26,9 +26,9 @@ public class PaymentAggregator {
     public static final String JOB_NAME = "payment-aggregator";
     public static final String DATACONNECTION_NAME = "kafka_dc";
 
-    public static void main(String[] args) {
-        new PaymentAggregator().run(TOPIC);
-    }
+    // public static void main(String[] args) {
+    //     new PaymentAggregator().run(TOPIC);
+    // }
 
     private void run(String topic) {
         HazelcastInstance instance = Hazelcast.bootstrappedInstance();

@@ -1,5 +1,6 @@
 package com.hz.demo.pmt.pain001;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
@@ -17,7 +18,9 @@ public class Document {
         this.cstmrCdtTrfInitn = cstmrCdtTrfInitn;
     }
     ///////// Metadata attributes start /////////
+    @JsonIgnore
     String parseError = null;
+    @JsonIgnore
     String key = null;
     public String getParseError() {
         return parseError;
@@ -25,6 +28,7 @@ public class Document {
     public void setParseError(String message) {
         parseError = message;
     }
+    @JsonIgnore
     public boolean isErrored() {
         return parseError != null;
     }

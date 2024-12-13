@@ -1,4 +1,4 @@
-package com.hz.demo.pmt.kafka;
+package com.hz.demo.pmt.job;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -61,7 +62,7 @@ public class PaymentProducer implements Serializable {
                 .map(i -> {
                     Pain001Generator gen = new Pain001Generator();
                     ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    var doc = gen.outXML(os);
+                    var doc = gen.outXML(os, 1, 50000);
                     String transaction;
                     try {
                         transaction = os.toString(StandardCharsets.UTF_8.name());
@@ -81,8 +82,8 @@ public class PaymentProducer implements Serializable {
         props.setProperty("bootstrap.servers", bootstrapServers);
         props.setProperty("key.deserializer", StringDeserializer.class.getCanonicalName());
         props.setProperty("value.deserializer", StringDeserializer.class.getCanonicalName());
-        props.setProperty("key.serializer", StringDeserializer.class.getCanonicalName());
-        props.setProperty("value.serializer", StringDeserializer.class.getCanonicalName());
+        props.setProperty("key.serializer", StringSerializer.class.getCanonicalName());
+        props.setProperty("value.serializer", StringSerializer.class.getCanonicalName());
         props.setProperty("auto.offset.reset", "earliest");
 
         return props;

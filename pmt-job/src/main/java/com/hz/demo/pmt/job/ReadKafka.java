@@ -5,7 +5,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import java.io.Serializable;
 import java.util.Properties;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 import com.hazelcast.core.Hazelcast;
@@ -17,7 +16,6 @@ import com.hazelcast.jet.kafka.KafkaSources;
 import com.hazelcast.jet.pipeline.Pipeline;
 import com.hazelcast.jet.pipeline.ServiceFactories;
 import com.hazelcast.jet.pipeline.ServiceFactory;
-import com.hazelcast.jet.pipeline.Sink;
 import com.hazelcast.jet.pipeline.Sinks;
 import com.hazelcast.jet.pipeline.StreamStage;
 import com.hazelcast.map.IMap;
@@ -26,7 +24,6 @@ import com.hz.demo.pmt.pain001.CdtTrfTxInf;
 import com.hz.demo.pmt.pain001.Document;
 import com.hz.demo.pmt.pain001.Pain001Reader;
 import com.hz.demo.pmt.pain001.PmtInf;
-import jakarta.jms.ConnectionFactory;
 
 public class ReadKafka implements Serializable{
     
@@ -75,11 +72,11 @@ public class ReadKafka implements Serializable{
         /////////// XML error flow
         StreamStage<Document> errorXML = parseStage.filter(Document::isErrored).setName("ifErrorXML");
         errorXML.writeTo(Sinks.map(MyConstants.IMAP_PAIN_PARSE_ERROR, doc -> doc.getKey(), doc -> doc.getParseError()));
-        Sink<Document> activeMQSink = Sinks.<Document>jmsQueueBuilder(() -> new ActiveMQConnectionFactory("tcp://activeMQ:61616"))
-            .destinationName("errorQ")
-            .messageFn((session, doc) -> session.createTextMessage(doc.getParseError()))
-            .build();
-        errorXML.writeTo(activeMQSink);
+        // Sink<Document> activeMQSink = Sinks.<Document>jmsQueueBuilder(() -> new ActiveMQConnectionFactory("tcp://activeMQ:61616"))
+        //     .destinationName("errorQ")
+        //     .messageFn((session, doc) -> session.createTextMessage(doc.getParseError()))
+        //     .build();
+        // errorXML.writeTo(activeMQSink);
         
         /////////// XML success flow
         StreamStage<CdtTrfTxInf> cdtTrfTxInfStage = parseStage
