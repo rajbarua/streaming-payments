@@ -41,13 +41,14 @@ public class Pain001Generator implements Serializable {
         grpHdr.setCreDtTm(currentDateTime);
         LocalDateTime now = LocalDateTime.now();
         GregorianCalendar gregorianCalendar = GregorianCalendar.from(now.atZone(ZoneId.systemDefault()));
-        XMLGregorianCalendar xmlGregorianCalendar;
+        XMLGregorianCalendarWrapper xmlGregorianCalendarWrpr;
         try {
-            xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+            XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+            xmlGregorianCalendarWrpr = new XMLGregorianCalendarWrapper(xmlGregorianCalendar);
         } catch (DatatypeConfigurationException e) {
             throw new RuntimeException("Error creating XMLGregorianCalendar", e);
         }
-        grpHdr.setCreDtTmGC(xmlGregorianCalendar);
+        grpHdr.setCreDtTmGC(xmlGregorianCalendarWrpr);
 
         // Set Payment Information
         // Generate random PmtInf elements

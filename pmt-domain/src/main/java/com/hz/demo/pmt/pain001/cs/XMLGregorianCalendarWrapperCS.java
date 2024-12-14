@@ -14,21 +14,20 @@ import com.hazelcast.nio.serialization.compact.CompactSerializer;
 import com.hazelcast.nio.serialization.compact.CompactWriter;
 import com.hz.demo.pmt.pain001.XMLGregorianCalendarWrapper;
 
-
-public class XMLGregorianCalendarCS implements CompactSerializer<XMLGregorianCalendar> {
+public class XMLGregorianCalendarWrapperCS implements CompactSerializer<XMLGregorianCalendarWrapper> {
 
     @Override
-    public Class<XMLGregorianCalendar> getCompactClass() {
-        return XMLGregorianCalendar.class;
+    public Class<XMLGregorianCalendarWrapper> getCompactClass() {
+        return XMLGregorianCalendarWrapper.class;
     }
 
     @Override
     public String getTypeName() {
-        return "XMLGregorianCalendar";
+        return "XMLGregorianCalendarWrapper";
     }
 
     @Override
-    public XMLGregorianCalendar read(CompactReader reader) {
+    public XMLGregorianCalendarWrapper read(CompactReader reader) {
         System.out.println("Reading XMLGregorianCalendar");
         OffsetDateTime date = reader.readTimestampWithTimezone(getTypeName());
         // create XMLGregorianCalendar from OffsetDateTime
@@ -45,7 +44,7 @@ public class XMLGregorianCalendarCS implements CompactSerializer<XMLGregorianCal
     }
 
     @Override
-    public void write(CompactWriter writer, XMLGregorianCalendar xmlGregorianCalendar) {
+    public void write(CompactWriter writer, XMLGregorianCalendarWrapper xmlGregorianCalendar) {
         System.out.println("Writing XMLGregorianCalendar");
         Instant instant = xmlGregorianCalendar.toGregorianCalendar().toInstant();
         // Create OffsetDateTime with the desired offset (e.g., UTC)

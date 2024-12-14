@@ -14,6 +14,7 @@ import com.hazelcast.nio.serialization.compact.CompactSerializer;
 import com.hazelcast.nio.serialization.compact.CompactWriter;
 import com.hz.demo.pmt.pain001.GrpHdr;
 import com.hz.demo.pmt.pain001.InitgPty;
+import com.hz.demo.pmt.pain001.XMLGregorianCalendarWrapper;
 
 public class GrpHdrCS implements CompactSerializer<GrpHdr>{
 
@@ -40,7 +41,8 @@ public class GrpHdrCS implements CompactSerializer<GrpHdr>{
         XMLGregorianCalendar creDtTmGC;
         try {
             GregorianCalendar gregorianCalendar = GregorianCalendar.from(creDtTmDateTime.toZonedDateTime());
-            creDtTmGC = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+            XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+             creDtTmGC = new XMLGregorianCalendarWrapper(xmlGregorianCalendar);
         } catch (DatatypeConfigurationException e) {
             throw new RuntimeException("Error creating XMLGregorianCalendar", e);
         }

@@ -17,7 +17,8 @@ import com.hazelcast.jet.core.metrics.Measurement;
 import com.hazelcast.jet.core.metrics.MetricTags;
 import com.hz.demo.pmt.pain001.Document;
 import com.hz.demo.pmt.pain001.Pain001Generator;
-import com.hz.demo.pmt.pain001.cs.GrpHdrCS;
+import com.hz.demo.pmt.pain001.cs.XMLGregorianCalendarCS;
+import com.hz.demo.pmt.pain001.cs.XMLGregorianCalendarWrapperCS;
 
 public class ReadStatsClient {
 
@@ -29,7 +30,9 @@ public class ReadStatsClient {
         // Compact Serialiser
         clientConfig.getSerializationConfig()
                 .getCompactSerializationConfig()
-                .addSerializer(new GrpHdrCS());
+                // .addSerializer(new GrpHdrCS());
+                .addSerializer(new XMLGregorianCalendarWrapperCS())
+                .addSerializer(new XMLGregorianCalendarCS());
 
         HazelcastInstance hzClient = HazelcastClient.newHazelcastClient(clientConfig);
         readStatsClient.testHybridCS(hzClient);
