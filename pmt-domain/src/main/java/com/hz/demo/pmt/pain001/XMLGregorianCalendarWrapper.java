@@ -12,11 +12,14 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
 public class XMLGregorianCalendarWrapper extends XMLGregorianCalendar implements Serializable{
+    
     private XMLGregorianCalendar xmlGregorianCalendarInner = null;
+    
     public XMLGregorianCalendarWrapper(XMLGregorianCalendar xmlGregorianCalendar) {
         super();
         this.xmlGregorianCalendarInner = xmlGregorianCalendar;
     }
+    
     @Override
     public void clear() {
         xmlGregorianCalendarInner.clear();

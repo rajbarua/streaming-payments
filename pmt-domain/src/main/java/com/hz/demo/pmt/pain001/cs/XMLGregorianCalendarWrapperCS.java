@@ -2,6 +2,7 @@ package com.hz.demo.pmt.pain001.cs;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.GregorianCalendar;
 
@@ -48,7 +49,7 @@ public class XMLGregorianCalendarWrapperCS implements CompactSerializer<XMLGrego
         System.out.println("Writing XMLGregorianCalendar");
         Instant instant = xmlGregorianCalendar.toGregorianCalendar().toInstant();
         // Create OffsetDateTime with the desired offset (e.g., UTC)
-        OffsetDateTime offsetDateTime = instant.atOffset(ZoneOffset.UTC);
+        OffsetDateTime offsetDateTime = instant.atZone(ZoneId.of("Asia/Kolkata")).toOffsetDateTime();
         writer.writeTimestampWithTimezone(getTypeName(), offsetDateTime);
     }
 
